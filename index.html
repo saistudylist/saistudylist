@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sai’s To-Do-List</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+        }
+        body { 
+            background-color: #0b192c; /* Deep Dark Blue */
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 40px 20px; 
+        }
+        .todo-container { 
+            background: #1e3a8a; /* Solid Navy Blue */
+            width: 100%; 
+            max-width: 700px; /* Greatly expanded width */
+            padding: 40px; /* More breathing room */
+            border-radius: 16px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); 
+            border: 3px solid #facc15; /* Thicker Yellow Border */
+        }
+        h1 { 
+            color: #facc15; /* Bright Yellow Header */
+            margin-top: 0; 
+            text-align: center; 
+            font-size: 36px; /* Massive text size */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+        .section-title {
+            color: #facc15;
+            font-size: 20px;
+            margin: 25px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(250, 204, 21, 0.3);
+            padding-bottom: 5px;
+        }
+        .input-section { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 10px; 
+        }
+        input[type="text"] { 
+            flex: 1; 
+            padding: 16px; /* Larger box text input padding */
+            border: 2px solid #3b82f6; 
+            background-color: #0f172a;
+            color: #ffffff;
+            border-radius: 10px; 
+            font-size: 18px; /* Bigger type */
+            outline: none; 
+            transition: all 0.2s; 
+        }
+        input[type="text"]:focus { 
+            border-color: #facc15; 
+            box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+        }
+        .add-btn { 
+            background-color: #facc15; 
+            color: #0b192c; 
+            border: none; 
+            padding: 16px 32px; 
+            border-radius: 10px; 
+            font-size: 18px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background-color 0.2s;
+        }
+        .add-btn:hover { 
+            background-color: #eab308; 
+        }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+        }
+        li { 
+            display: flex; 
+            align-items: center; 
+            padding: 18px; /* Taller element box heights */
+            background: #0f172a; 
+            color: #ffffff;
+            margin-bottom: 12px; 
+            border-radius: 10px; 
+            border-left: 6px solid #facc15; 
+            font-size: 18px; /* Bigger task lists scale */
+            transition: all 0.3s ease; 
+        }
+        li.fade-out {
+            opacity: 0;
+            transform: translateX(50px); /* Side slide transition */
+        }
+        .custom-checkbox {
+            width: 26px; /* Bigger clicking targets */
+            height: 26px;
+            border: 2px solid #facc15;
+            border-radius: 50%;
+            margin-right: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .custom-checkbox:hover {
+            background-color: rgba(250, 204, 21, 0.2);
+        }
+        .custom-checkbox::after {
+            content: '✓';
+            color: #0b192c;
+            font-weight: bold;
+            font-size: 16px;
+            display: none;
+        }
+        .custom-checkbox.checked {
+            background-color: #facc15;
+        }
+        .custom-checkbox.checked::after {
+            display: block;
+        }
+        .task-text { 
+            flex: 1; 
+            word-break: break-all;
+            line-height: 1.4;
+        }
+        /* Completed History Styles */
+        .completed-list li {
+            border-left: 6px solid #475569;
+            background: rgba(15, 23, 42, 0.6);
+            color: #94a3b8;
+            opacity: 0.6;
+        }
+        .completed-list .task-text {
+            text-decoration: line-through;
+        }
+        .clear-history-btn {
+            background: transparent;
+            color: #94a3b8;
+            border: 1px dashed #475569;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .clear-history-btn:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        /* Massive center screen alert toast notice banner */
+        .toast-notification {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translate(-50%, -100px);
+            background-color: #facc15;
+            color: #0b192c;
+            padding: 16px 36px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .toast-notification.show {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="todo-container">
+    <h1>Sai’s To-Do-List</h1>
+    
+    <div class="input-section">
+        <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off">
+        <button class="add-btn" onclick="addTask()">Add Task</button>
+    </div>
+
+    <div class="section-title">Active Items</div>
+    <ul id="taskList"></ul>
+
+    <div class="section-title">Completed Log</div>
+    <ul id="completedList" class="completed-list"></ul>
+    <button id="clearHistory" class="clear-history-btn" onclick="clearHistory()" style="display:none;">Clear History Log</button>
+</div>
+
+<div id="toast" class="toast-notification">Task Completed!</div>
+
+<script>
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+    const completedList = document.getElementById('completedList');
+    const clearHistoryBtn = document.getElementById('clearHistory');
+    const toast = document.getElementById('toast');
+
+    // Load structure
+    let activeTasks = JSON.parse(localStorage.getItem('sai_active')) || [];
+    let archiveTasks = JSON.parse(localStorage.getItem('sai_archive')) || [];
+
+    activeTasks.forEach(text => renderActiveTask(text));
+    archiveTasks.forEach(text => renderArchiveTask(text));
+    toggleHistoryButton();
+
+    function addTask() {
+        const text = taskInput.value.trim();
+        if (text === '') return;
+        renderActiveTask(text);
+        saveAll();
+        taskInput.value = '';
+    }
+
+    function renderActiveTask(text) {
+        const li = document.createElement('li');
+        const checkbox = document.createElement('div');
+        checkbox.className = 'custom-checkbox';
+        
+        const span = document.createElement('span');
+        span.className = 'task-text';
+        span.textContent = text;
+
+        checkbox.onclick = () => {
+            checkbox.classList.add('checked');
+            showNotification();
+            
+            setTimeout(() => {
+                li.classList.add('fade-out');
+                setTimeout(() => {
+                    li.remove();
+                    renderArchiveTask(text);
+                    saveAll();
+                }, 300);
+            }, 200);
+        };
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        taskList.appendChild(li);
+    }
+
+    function renderArchiveTask(text) {
+        const li = document.createElement('li');
+        const checkbox = document.createElement('div');
+        checkbox.className = 'custom-checkbox checked'; // Stays checked
+        
+        const span = document.createElement('span');
+        span.className = 'task-text';
+        span.textContent = text;
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        completedList.appendChild(li);
+        toggleHistoryButton();
+    }
+
+    function showNotification() {
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+    }
+
+    function clearHistory() {
+        completedList.innerHTML = '';
+        saveAll();
+    }
+
+    function toggleHistoryButton() {
+        if (completedList.children.length > 0) {
+            clearHistoryBtn.style.display = 'block';
+        } else {
+            clearHistoryBtn.style.display = 'none';
+        }
+    }
+
+    function saveAll() {
+        const active = [];
+        document.querySelectorAll('#taskList li:not(.fade-out)').forEach(li => {
+            active.push(li.querySelector('.task-text').textContent);
+        });
+
+        const archive = [];
+        document.querySelectorAll('#completedList li').forEach(li => {
+            archive.push(li.querySelector('.task-text').textContent);
+        });
+
+        localStorage.setItem('sai_active', JSON.stringify(active));
+        localStorage.setItem('sai_archive', JSON.stringify(archive));
+        toggleHistoryButton();
+    }
+
+    taskInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addTask();
+    });
+</script>
+
+</body>
+</html>
